@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="10"> <!-- Auto-refresh every 10s -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suricata Alerts Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-dark text-white">
+
+<div class="container py-4">
+  <h2 class="mb-4 text-info">📊 Suricata Alerts Dashboard</h2>
+
+  <form class="row g-3 mb-4" method="get">
+    <div class="col-md-3">
+      <label class="form-label">Protocol</label>
+      <select class="form-select" name="protocol">
+        <option value="">All</option>
+        {% for proto in protocols %}
+          <option value="{{ proto }}">{{ proto }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Category</label>
+      <select class="form-select" name="category">
+        <option value="">All</option>
+        {% for cat in categories %}
+          <option value="{{ cat }}">{{ cat }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Signature</label>
+      <select class="form-select" name="signature">
+        <option value="">All</option>
+        {% for sig in signatures %}
+          <option value="{{ sig }}">{{ sig }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+  </form>
+
+  <table class="table table-striped table-dark table-bordered">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Source IP</th>
+        <th>Dest IP</th>
+        <th>Protocol</th>
+        <th>Category</th>
+        <th>Signature</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for alert in alerts %}
+      <tr>
+        <td>{{ alert.timestamp }}</td>
+        <td>{{ alert.src_ip }}</td>
+        <td>{{ alert.dest_ip }}</td>
+        <td>{{ alert.proto }}</td>
+        <td>{{ alert.alert.category }}</td>
+        <td>{{ alert.alert.signature }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
