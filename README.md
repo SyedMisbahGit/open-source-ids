@@ -13,10 +13,5 @@ This phase focuses on setting up a signature-based IDS using Suricata.
 3. Add custom rules in `local.rules`
 4. Run using:
 ```bash
-sudo suricata -c ./phase1-sids/suricata-config/suricata.yaml -i eth0 -l ./phase1-sids/logs/
-```
+sudo suricata -c ./phase1-sids/suricata-config/suricata.yaml -i eth0 -l ./phase1-sids/logs
 
-## 📁 Structure
-- `suricata-config/`: Custom configs and rule files
-- `pcap-samples/`: Test traffic files
-- `logs/`: Output directory for Suricata logs
