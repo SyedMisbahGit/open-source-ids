@@ -1,0 +1,28 @@
+%YAML 1.1
+---
+vars:
+  address-groups:
+    HOME_NET: "[10.59.0.0/20]"
+    EXTERNAL_NET: "!"
+  port-groups:
+    HTTP_PORTS: "80"
+    SHELLCODE_PORTS: "!80"
+    ORACLE_PORTS: "1521"
+    SSH_PORTS: "22"
+
+default-log-dir: ./logs
+
+rule-files:
+  - /home/syed/Downloads/open-source-ids/phase1-sids/suricata-config/rules/local.rules
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      community-id: true
+      xff:
+        enabled: no
+      types:
+        - alert:
+            payload: yes

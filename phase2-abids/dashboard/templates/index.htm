@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🛡️ Open-Source IDS Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-dark text-light">
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>🔒 Open-Source IDS Centralized Dashboard</h2>
+      <form method="get" class="d-flex align-items-center">
+        <label for="mode" class="me-2">🔁 Traffic Mode:</label>
+        <select class="form-select me-2" name="mode" onchange="this.form.submit()">
+          <option value="dataset" {% if selected_mode == 'dataset' %}selected{% endif %}>📁 Dataset</option>
+          <option value="live" {% if selected_mode == 'live' %}selected{% endif %}>🌐 Live (Suricata)</option>
+        </select>
+
+        <label for="type" class="me-2 ms-4">⚙️ Filter:</label>
+        <select class="form-select" name="type" onchange="this.form.submit()">
+          <option value="">All</option>
+          <option value="Signature">Signature</option>
+          <option value="Anomaly">Anomaly</option>
+        </select>
+      </form>
+    </div>
+
+    <div class="bg-secondary p-3 rounded mb-4">
+      <h5>🧠 How It Works</h5>
+      <ul>
+        <li><b>🚦 Traffic Generation:</b> Choose between Suricata live traffic or dataset PCAPs.</li>
+        <li><b>🛡️ Signature-based IDS:</b> Suricata scans and generates alerts using predefined rules.</li>
+        <li><b>📊 Anomaly-based IDS:</b> Deep Learning model flags abnormal behavior from the CIC-IDS 2017 dataset.</li>
+        <li><b>📋 Dashboard:</b> Displays merged alerts and real-time analysis using filters and visual charts.</li>
+      </ul>
+    </div>
+
+    {% if data %}
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <canvas id="typeChart"></canvas>
+        </div>
+        <div class="col-md-4">
+          <canvas id="protocolChart"></canvas>
+        </div>
+        <div class="col-md-4">
+          <canvas id="timelineChart"></canvas>
+        </div>
+      </div>
+
+      <table class="table table-bordered table-hover table-dark">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Source IP</th>
+            <th>Destination IP</th>
+            <th>Protocol</th>
+            <th>Alert Message</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+            <tr>
+              <td>{{ row.timestamp }}</td>
+              <td>{{ row.source_ip }}</td>
+              <td>{{ row.dest_ip }}</td>
+              <td>{{ row.protocol }}</td>
+              <td>{{ row.alert_msg }}</td>
+              <td>{{ row.type }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-warning">
+        ⚠️ No alerts found. Please check traffic mode or dataset availability.
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    const chartData = {{ chart_data | tojson }};
+
+    const renderChart = (ctx, labels, data, title) => {
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: title,
+            data: data,
+            backgroundColor: ['#ff4c4c', '#36a2eb', '#ffce56', '#4bc0c0'],
+            borderColor: '#333',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' },
+            title: { display: true, text: title }
+          }
+        }
+      });
+    };
+
+    window.onload = () => {
+      if (chartData.counts) {
+        renderChart(document.getElementById('typeChart'), Object.keys(chartData.counts), Object.values(chartData.counts), "Alert Types");
+      }
+      if (chartData.protocols) {
+        renderChart(document.getElementById('protocolChart'), Object.keys(chartData.protocols), Object.values(chartData.protocols), "Protocol Distribution");
+      }
+      if (chartData.timeline) {
+        const ctx = document.getElementById('timelineChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: Object.keys(chartData.timeline),
+            datasets: [{
+              label: 'Alerts Over Time',
+              data: Object.values(chartData.timeline),
+              borderColor: '#36a2eb',
+              fill: false
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: { x: { display: false } }
+          }
+        });
+      }
+    };
+  </script>
+</body>
+</html>

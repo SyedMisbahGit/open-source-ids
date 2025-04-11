@@ -7,7 +7,6 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras import regularizers
-from tensorflow.keras.models import load_model
 from joblib import dump
 
 # Paths
@@ -23,11 +22,15 @@ df = pd.read_csv(CLEANED_DATA_PATH)
 
 # 2. Drop the label column if exists
 if "Label" in df.columns:
+    labels = df["Label"]  # Separate the label column
     df.drop("Label", axis=1, inplace=True)
 
-# 3. Normalize features
+# 3. Normalize features (only numeric columns)
+numeric_columns = df.select_dtypes(include=[np.number]).columns
+X = df[numeric_columns]
+
 scaler = MinMaxScaler()
-X_scaled = scaler.fit_transform(df)
+X_scaled = scaler.fit_transform(X)
 
 # Save the scaler
 dump(scaler, open(SCALER_PATH, "wb"))

@@ -1,0 +1,25 @@
+# Byte-compiled / virtual environment
+__pycache__/
+*.py[cod]
+*.so
+*.pkl
+
+# Virtual environments
+venv/
+venv310/
+*/venv310/
+*.h5
+
+# Dataset + Models
+*.npz
+*.csv
+*.pcap
+*.log
+*.json
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# OS / IDE junk
+.DS_Store
+*.swp

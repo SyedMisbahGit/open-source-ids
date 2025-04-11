@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🔒 Open-Source IDS Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #111827;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1em;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #1f2937;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        select {
+            padding: 8px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .info-box {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .explanation {
+            margin-top: 20px;
+            background-color: #fef9c3;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #fde68a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Open-Source IDS Centralized Dashboard</h1>
+
+        <div class="explanation">
+            <h2>🧠 System Overview</h2>
+            <ul>
+                <li>🚦 <strong>Traffic Source:</strong> <em>Select between Live Traffic (Suricata) or Dataset-based simulation</em>.</li>
+                <li>🛡️ <strong>Signature-based IDS (SIDS):</strong> Suricata detects threats using known rules.</li>
+                <li>📈 <strong>Anomaly-based IDS (AIDS):</strong> Deep Learning model flags unknown or suspicious patterns.</li>
+                <li>📊 <strong>Dashboard:</strong> Merges both detection systems into a single view with filters and explanations.</li>
+            </ul>
+        </div>
+
+        <!-- Filters -->
+        <form method="get" style="display: flex; justify-content: center; gap: 20px; align-items: center; margin-bottom: 1em;">
+            <label for="mode"><b>⚙️ Traffic Mode:</b></label>
+            <select name="mode" onchange="this.form.submit()">
+                <option value="dataset" {{ 'selected' if mode == 'dataset' else '' }}>📁 Dataset</option>
+                <option value="live" {{ 'selected' if mode == 'live' else '' }}>🌐 Live Traffic</option>
+            </select>
+
+            <label for="type"><b>📂 Filter Alerts:</b></label>
+            <select name="type" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="Signature" {{ 'selected' if request.args.get('type') == 'Signature' else '' }}>Signature</option>
+                <option value="Anomaly" {{ 'selected' if request.args.get('type') == 'Anomaly' else '' }}>Anomaly</option>
+            </select>
+        </form>
+
+        <!-- Alert Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>📅 Timestamp</th>
+                    <th>📤 Source IP</th>
+                    <th>📥 Destination IP</th>
+                    <th>📡 Protocol</th>
+                    <th>🚨 Alert Message</th>
+                    <th>🔍 Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alert in data %}
+                    <tr>
+                        <td>{{ alert.timestamp }}</td>
+                        <td>{{ alert.source_ip }}</td>
+                        <td>{{ alert.dest_ip }}</td>
+                        <td>{{ alert.protocol }}</td>
+                        <td>{{ alert.alert_msg }}</td>
+                        <td>{{ alert.type }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">🚫 No alerts to display.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
