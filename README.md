@@ -1,117 +1,91 @@
-# Open-Source IDS/XDR Project
-
-This is an open-source, phase-wise implementation of an Intrusion Detection System (IDS) that evolves into a full Extended Detection & Response (XDR) system. The goal is to combine rule-based, anomaly-based, and host-based detection under a unified dashboard using free and open-source tools.
-
----
-
-## 📌 Project Overview
-
-| Phase | Component                         | Description |
-|-------|-----------------------------------|-------------|
-| 1     | Signature-Based IDS               | Suricata NIDS + Flask Dashboard to parse and visualize Suricata alerts (eve.json). |
-| 2     | Anomaly-Based IDS (ABIDS)         | Deep learning autoencoder model trained on CIC-IDS 2017 to detect anomalous traffic. |
-| 3     | Merged Dashboard                  | Unified Flask-based dashboard to display alerts from Suricata and the ABIDS module. |
-| 4     | Host-Based IDS (HIDS)             | Integrate a lightweight host agent (like OSSEC or Wazuh). |
-| 5     | Threat Intelligence + Correlation | Fuse alerts from different modules with enrichment, deduplication, and correlation. |
+# 🚨 Open Source Hybrid IDS (Intrusion Detection System) 🚨  
+A centralized-controlled, hybrid, open-source Intrusion Detection System that combines Signature-based IDS (S-IDS), Anomaly-based IDS (A-IDS using Deep Learning), and Host-based IDS (H-IDS) into a unified dashboard-driven detection-only architecture.
 
 ---
 
-## 🚀 Phase 1: Signature-Based IDS
+## 📁 Repository Structure
 
-- **Tool Used**: Suricata
-- **Features**:
-  - Real-time network traffic inspection
-  - Alert generation based on rule signatures
-- **Dashboard**: Flask app parses Suricata's `eve.json` and displays filtered alerts.
+open-source-ids/ ├── dashboard/ # Flask-based Central Dashboard │ ├── templates/ # HTML templates (index.html, etc.) │ ├── static/ # JS, CSS, Icons │ └── app.py # Flask backend with control panel ├── models/ # Deep Learning models (Bi-LSTM, etc.) ├── datasets/ # CIC-IDS 2017 & other test datasets ├── scripts/ # tcpreplay, Suricata triggers, etc. ├── hids/ # H-IDS tools like OSSEC/Wazuh configs ├── logs/ # Suricata eve.json and model predictions └── README.md # You're here!
 
-### ✅ Completed:
-- [x] Suricata installed and configured
-- [x] eve.json parsing setup
-- [x] Flask dashboard to view alerts
 
 ---
 
-## 🧠 Phase 2: Anomaly-Based IDS (ABIDS)
+## 🌐 System Architecture Overview
 
-- **Tool Used**: Autoencoder (Keras/TensorFlow)
-- **Dataset**: CIC-IDS 2017
-- **Pipeline**:
-  1. Preprocess and clean dataset
-  2. Train autoencoder on benign samples
-  3. Evaluate reconstruction error on unseen data
-  4. Store anomaly scores in `anomaly_results.csv`
-
-### ✅ Completed:
-- [x] Autoencoder training script
-- [x] Anomaly evaluation script
-- [x] Mini-dashboard to view anomaly results
+        +---------------------------+
+        |     Incoming/Outgoing     |
+        |         Traffic           |
+        +-------------+-------------+
+                      |
+                +-----v------+
+                |   S-IDS    | (Signature-Based)
+                +-----+------+
+                      |
+    +-----------------+-------------------+
+    | Match Found?                         |
+    | Yes → 🚨 Alert Dashboard             |
+    | No  → Granularize → Forward to A-IDS |
+    +-----------------+-------------------+
+                      |
+                +-----v------+
+                |   A-IDS    | (Bi-LSTM DL Model)
+                +-----+------+
+                      |
+    +-----------------+-------------------------+
+    | Anomaly Found?                             |
+    | Yes → 🚨 Alert Dashboard + 🧠 Update S-IDS |
+    | No → Possibly Malicious → Alert Dashboard  |
+    +-----------------+-------------------------+
+                      |
+               Internal Network
+                      |
+                +-----v-----+
+                |   H-IDS   |
+                +-----------+
 
 ---
 
-## 📊 Phase 3: Unified Dashboard (Work In Progress)
+## 🧠 Features & Capabilities
 
-- Merge Phase 1 (Suricata alerts) and Phase 2 (ABIDS alerts) into a single dashboard
-- Use tabs or filters to switch between:
-  - Signature Alerts
-  - Anomaly Alerts
-  - Correlated Alerts (future)
-
-### 🔧 To Do:
-- [ ] Flask blueprint restructuring
-- [ ] Combined HTML templates
-- [ ] Integrate Suricata + ABIDS data sources
-- [ ] Add filters (IP, time, label, etc.)
+| Component | Description |
+|----------|-------------|
+| 🔐 **S-IDS (Suricata)** | Scans for known attack signatures |
+| 🤖 **A-IDS (Bi-LSTM)** | Detects unseen patterns in granular traffic |
+| 🧱 **H-IDS** | Detects internal and post-NIDS threats |
+| 📊 **Dashboard** | Real-time alert visualization, traffic control, mode switch |
+| 🔁 **Mode Switch** | Toggle between Live Traffic ↔ Dataset-based Simulation |
+| 🎯 **Traffic Granularization** | Extracts packet-level features for anomaly detection |
+| 🔒 **Encrypted Traffic Handling** | Partial visibility via metadata & statistical patterns |
 
 ---
 
-## 🛠️ Setup Instructions
+## 🎓 Research Basis
+
+- 📚 **Dataset**: [CIC-IDS 2017](https://www.unb.ca/cic/datasets/ids-2017.html)  
+- 🤖 **Model**: Bi-LSTM used to capture bi-directional flow behavior  
+- 🧪 **Simulation**: tcpreplay used to replay `.pcap` files as synthetic traffic  
+- 📄 **Papers Studied**: 10+ IDS research papers + real-world tools compared (Snort, Suricata, OSSEC, etc.)
+
+---
+
+## ✅ Completed Milestones
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| Phase 1 | S-IDS Setup with Suricata + Dashboard | ✅ Complete |
+| Phase 2 | A-IDS Planning with Bi-LSTM + Granular Dataset | ✅ Planned |
+| Phase 3 | Dashboard Merge + Control Panel UI | ✅ Complete |
+| Phase 4 | Presentation & Research Prep | ✅ Complete |
+| Phase 5 | H-IDS Planning with OSSEC/Wazuh | 🕐 Upcoming |
+
+---
+
+## 🛠 How to Run
+
+### ⚙️ Prerequisites
 
 ```bash
-# Clone the repo
-$ git clone https://github.com/SyedMisbahGit/open-source-ids.git
-$ cd open-source-ids
-
-# Setup virtual environment
-$ python3 -m venv venv310
-$ source venv310/bin/activate
-
-# Install dependencies
-(venv310) $ pip install -r requirements.txt
-
-# Run dashboard (example)
-(venv310) $ cd phase1-sids/dashboard
-(venv310) $ python3 app.py
-```
-
----
-
-## 📂 Directory Structure (WIP)
-
-```bash
-open-source-ids/
-├── phase1-sids/
-│   ├── dashboard/           # Flask dashboard for Suricata
-│   └── suricata-config/     # Suricata rules, logs
-├── phase2-abids/
-│   ├── training/            # Autoencoder model training scripts
-│   ├── evaluation/          # Anomaly detection output (CSV)
-│   └── dashboard/           # Flask dashboard for ABIDS
-├── phase3-merged-dashboard/ # Unified dashboard (in progress)
-├── README.md
-└── requirements.txt
-```
-
----
-
-## 📌 Future Enhancements
-
-- 🔄 Real-time data ingestion using Kafka
-- 🌐 Threat intelligence API integrations
-- 📁 SIEM-like alert management (archiving, tagging, acknowledgment)
-- 📊 Dashboard enhancement with role-based access control
-- 📦 Dockerization for full-stack deployment
-
----
-
-Feel free to contribute or suggest improvements! 🚀
+sudo apt update
+sudo apt install suricata tcpreplay python3 python3-pip
+pip3 install flask pandas scikit-learn matplotlib tensorflow
 
