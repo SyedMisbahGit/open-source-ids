@@ -19,36 +19,62 @@ open-source-ids/
 
 ---
 
-## 🌐 System Architecture Overview
+## 🏗️ Architecture
 
+### Detection Flow
 
+```
+    +---------------------------+
+    |     Incoming/Outgoing     |
+    |         Traffic           |
+    +-------------+-------------+
+                  |
+            +-----v------+
+            |   S-IDS    | (Signature-Based)
+            +-----+------+
+                  |
++-----------------+-------------------+
+| Match Found?                         |
+| Yes → 🚨 Alert Dashboard             |
+| No  → Granularize → Forward to A-IDS |
++-----------------+-------------------+
+                  |
+            +-----v------+
+            |   A-IDS    | (Bi-LSTM DL Model)
+            +-----+------+
+                  |
++-----------------+-------------------------+
+| Anomaly Found?                             |
+| Yes → 🚟 Alert Dashboard + 🧠 Update S-IDS |
+| No → Possibly Malicious → Alert Dashboard  |
++-----------------+-------------------------+
+                  |
+           Internal Network
+                  |
+            +-----v-----+
+            |   H-IDS   |
+            +-----------+
+```
 
-        +---------------------------+
-        |     Incoming/Outgoing     |
-        |         Traffic           |
-        +-------------+-------------+
-                      |
-                +-----v------+
-                |   S-IDS    | (Signature-Based)
-                +-----+------+
-                      |
-    +-----------------+-------------------+
-    | Match Found?                         |
-    | Yes → 🚨 Alert Dashboard             |
-    | No  → Granularize → Forward to A-IDS |
-    +-----------------+-------------------+
-                      |
-                +-----v------+
-                |   A-IDS    | (Bi-LSTM DL Model)
-                +-----+------+
-                      |
-    +-----------------+-------------------------+
-    | Anomaly Found?                             |
-    | Yes → 🚨 Alert Dashboard + 🧠 Update S-IDS |
-    | No → Possibly Malicious → Alert Dashboard  |
-    +-----------------+-------------------------+
-                      |
-               Internal Network
+### Component Breakdown
+
+#### 1. S-IDS (Signature-Based IDS)
+- First line of defense using Suricata NIDS
+- Real-time signature matching against known threats
+- Rules updated from threat intelligence feeds
+- Granularizes non-matching traffic for A-IDS
+
+#### 2. A-IDS (Anomaly-Based IDS)
+- Uses Bi-LSTM deep learning model
+- Detects unknown threats and zero-day attacks
+- Learns from network behavior patterns
+- Updates S-IDS signatures with new patterns
+
+#### 3. H-IDS (Host-Based IDS)
+- Monitors internal network and hosts
+- Detects suspicious processes and system events
+- Integrates with S-IDS and A-IDS alerts
+- Provides host-level context to alerts
                       |
                 +-----v-----+
                 |   H-IDS   |
