@@ -1,0 +1,56 @@
+groups:
+  - name: ids_alerts
+    rules:
+      - alert: HighAlertRate
+        expr: rate(alerts_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High alert rate detected"
+          description: "More than 10 alerts per minute are being generated"
+
+      - alert: HighCPUUsage
+        expr: process_cpu_seconds_total > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "The IDS process is using more CPU than expected"
+
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes > 1000000000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "The IDS process is using more than 1GB of memory"
+
+      - alert: RedisConnectionError
+        expr: redis_connected_clients == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis connection lost"
+          description: "The IDS cannot connect to Redis"
+
+      - alert: KafkaConnectionError
+        expr: kafka_consumergroup_lag_sum > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka lag detected"
+          description: "Kafka consumer lag is increasing"
+
+      - alert: ElasticsearchError
+        expr: elasticsearch_cluster_health_status == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Elasticsearch unhealthy"
+          description: "Elasticsearch cluster health is not green"

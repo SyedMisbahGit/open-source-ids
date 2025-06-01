@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ids-web
+  labels:
+    app: ids
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ids
+  template:
+    metadata:
+      labels:
+        app: ids
+    spec:
+      containers:
+      - name: web
+        image: ghcr.io/SyedMisbahGit/open-source-ids:latest
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - secretRef:
+            name: ids-secrets
+        - configMapRef:
+            name: ids-config
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ids-web
+spec:
+  selector:
+    app: ids
+  ports:
+  - port: 5000
+    targetPort: 5000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ids-config
+  labels:
+    app: ids
+data:
+  LOG_LEVEL: "INFO"
+  DATABASE_URL: "postgresql://postgres:postgres@db:5432/ids"
+  CACHE_REDIS_URL: "redis://redis:6379/0"
+  KAFKA_HOST: "kafka"
+  KAFKA_PORT: "9092"
+  ELASTICSEARCH_HOST: "elasticsearch"
+  ELASTICSEARCH_PORT: "9200"
+  PROMETHEUS_HOST: "prometheus"
+  PROMETHEUS_PORT: "9090"
+  GRAFANA_HOST: "grafana"
+  GRAFANA_PORT: "3000"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ids-secrets
+  labels:
+    app: ids
+type: Opaque
+data:
+  SECRET_KEY: your-base64-encoded-secret-key
+  JWT_SECRET: your-base64-encoded-jwt-secret
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ids-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: ids.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ids-web
+            port:
+              number: 5000

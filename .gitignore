@@ -1,25 +1,90 @@
 # Byte-compiled / virtual environment
 __pycache__/
 *.py[cod]
+*$py.class
 *.so
-*.pkl
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Virtual environments
 venv/
+ENV/
 venv310/
 */venv310/
-*.h5
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Cache
+.cache/
+*.pyc
+__pycache__/
 
 # Dataset + Models
 *.npz
 *.csv
 *.pcap
-*.log
-*.json
+*.h5
 
-# Jupyter Notebooks checkpoints
-.ipynb_checkpoints/
+# Documentation
+_docs/build/
+_docs/_build/
 
 # OS / IDE junk
 .DS_Store
-*.swp

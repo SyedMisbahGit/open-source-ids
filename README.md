@@ -1,6 +1,247 @@
 # Open-Source IDS/XDR Project
 
-This is an open-source, phase-wise implementation of an Intrusion Detection System (IDS) that evolves into a full Extended Detection & Response (XDR) system. The goal is to combine rule-based, anomaly-based, and host-based detection under a unified dashboard using free and open-source tools.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
+[![Build Status](https://img.shields.io/github/workflow/status/SyedMisbahGit/open-source-ids/CI)](https://github.com/SyedMisbahGit/open-source-ids/actions)
+
+An open-source, scalable Intrusion Detection System (IDS) that evolves into a full Extended Detection & Response (XDR) system. This project combines rule-based, anomaly-based, and host-based detection under a unified dashboard using modern Python and open-source tools.
+
+## 🚀 Features
+
+- 🛡️ **Signature-based IDS (S-IDS)**
+  - Real-time network traffic inspection
+  - Suricata NIDS integration
+  - Rule-based threat detection
+  - Custom signature management
+
+- 🧠 **Anomaly-based IDS (A-IDS)**
+  - Deep learning autoencoder for anomaly detection
+  - CIC-IDS 2017 dataset integration
+  - Real-time traffic analysis
+  - Anomaly scoring and thresholding
+
+- 🛡️ **Host-based IDS (H-IDS)**
+  - Host-level threat detection
+  - System event monitoring
+  - File integrity checking
+  - Process monitoring
+
+- 📊 **Unified Dashboard**
+  - Real-time traffic visualization
+  - Alert correlation
+  - Threat intelligence integration
+  - Advanced filtering and search
+
+## 📦 Technology Stack
+
+- **Backend**
+  - Python 3.10+
+  - Flask
+  - SQLAlchemy
+  - Redis (optional)
+  - Elasticsearch (optional)
+
+- **Frontend**
+  - HTML5/CSS3
+  - JavaScript
+  - Bootstrap
+  - Chart.js
+
+- **Machine Learning**
+  - TensorFlow
+  - Scikit-learn
+  - Autoencoder model
+
+- **Security**
+  - JWT authentication
+  - bcrypt password hashing
+  - CSRF protection
+  - Rate limiting
+
+## 🛠️ Setup
+
+### Prerequisites
+
+- Docker and Docker Compose
+- Python 3.8+
+- Git
+
+### Quick Start
+
+1. Clone the repository:
+```bash
+git clone https://github.com/SyedMisbahGit/open-source-ids.git
+cd open-source-ids
+```
+
+2. Create and activate virtual environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Copy environment file and configure:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+5. Initialize database (if using SQLAlchemy):
+```bash
+flask db init
+flask db migrate
+flask db upgrade
+```
+
+6. Start the application:
+```bash
+flask run
+```
+
+### Development Setup
+
+1. Install development dependencies:
+```bash
+pip install -e .[dev]
+```
+
+2. Run tests:
+```bash
+pytest
+```
+
+3. Run linters:
+```bash
+flake8 src/
+black src/
+mypy src/
+```
+
+4. Generate documentation:
+```bash
+make docs
+```
+
+## 📂 Project Structure
+
+```
+open-source-ids/
+├── src/                     # Source code directory
+│   ├── core/               # Core IDS components
+│   │   ├── signature/      # Signature-based IDS
+│   │   ├── anomaly/        # Anomaly-based IDS
+│   │   └── host/           # Host-based IDS
+│   ├── config/             # Configuration files
+│   │   └── suricata/      # Suricata configuration
+│   ├── models/             # Database models
+│   │   ├── base.py        # Base model
+│   │   └── alert.py       # Alert model
+│   ├── templates/          # Flask templates
+│   │   └── dashboard/     # Main dashboard templates
+│   └── static/             # Static assets
+│       ├── css/           # Stylesheets
+│       └── js/            # JavaScript
+├── data/                   # Data storage
+│   ├── raw/               # Raw network data
+│   └── processed/         # Processed data
+├── logs/                   # Log files
+│   ├── suricata/          # Suricata logs
+│   └── app/              # Application logs
+├── requirements.txt        # Python dependencies
+├── Makefile               # Build automation
+└── README.md              # Documentation
+```
+
+## 📚 Documentation
+
+- [API Documentation](docs/api.md)
+- [Configuration Guide](docs/config.md)
+- [Deployment Guide](docs/deployment.md)
+- [Troubleshooting](docs/troubleshooting.md)
+
+## 📊 Database Schema
+
+The project uses SQLAlchemy ORM with the following entities:
+
+```sql
+-- Alerts Table
+CREATE TABLE alerts (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP NOT NULL,
+    source_ip VARCHAR(15) NOT NULL,
+    dest_ip VARCHAR(15) NOT NULL,
+    source_port INTEGER,
+    dest_port INTEGER,
+    protocol VARCHAR(10),
+    category VARCHAR(50),
+    signature VARCHAR(255),
+    severity INTEGER,
+    additional_data JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Signatures Table
+CREATE TABLE signatures (
+    id SERIAL PRIMARY KEY,
+    signature_id VARCHAR(50) UNIQUE,
+    category VARCHAR(50),
+    severity INTEGER,
+    description TEXT,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Host Events Table
+CREATE TABLE host_events (
+    id SERIAL PRIMARY KEY,
+    host_id VARCHAR(50),
+    event_type VARCHAR(50),
+    event_data JSONB,
+    timestamp TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## 📈 Performance
+
+- Real-time processing
+- Efficient memory usage
+- Scalable architecture
+- Caching support
+
+## 🛡️ Security
+
+- JWT authentication
+- Role-based access control
+- Secure password hashing
+- Rate limiting
+- CSRF protection
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Thanks to the Suricata community
+- Thanks to the TensorFlow team
+- Thanks to all contributors
+
+## 📞 Support
+
+For support, email [your-email@example.com](mailto:your-email@example.com) or create an issue in the repository.
 
 ---
 
@@ -43,8 +284,6 @@ This is an open-source, phase-wise implementation of an Intrusion Detection Syst
 
 ### ✅ Completed:
 - [x] Autoencoder training script
-- [x] Anomaly evaluation script
-- [x] Mini-dashboard to view anomaly results
 
 ---
 
@@ -66,39 +305,200 @@ This is an open-source, phase-wise implementation of an Intrusion Detection Syst
 
 ## 🛠️ Setup Instructions
 
+### Prerequisites
+- Python 3.10 or higher
+- PostgreSQL (optional, for production)
+- Redis (optional, for caching)
+- Elasticsearch (optional, for advanced search)
+- Kafka (optional, for distributed logging)
+
+### Quick Start
+
+1. Clone the repository:
 ```bash
-# Clone the repo
-$ git clone https://github.com/SyedMisbahGit/open-source-ids.git
-$ cd open-source-ids
+git clone https://github.com/SyedMisbahGit/open-source-ids.git
+cd open-source-ids
+```
 
-# Setup virtual environment
-$ python3 -m venv venv310
-$ source venv310/bin/activate
+2. Create and activate virtual environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-# Install dependencies
-(venv310) $ pip install -r requirements.txt
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-# Run dashboard (example)
-(venv310) $ cd phase1-sids/dashboard
-(venv310) $ python3 app.py
+4. Copy environment file and configure:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+5. Initialize database (if using SQLAlchemy):
+```bash
+flask db init
+flask db migrate
+flask db upgrade
+```
+
+6. Start the application:
+```bash
+flask run
+```
+
+### Development Setup
+
+1. Install development dependencies:
+```bash
+pip install -e .[dev]
+```
+
+2. Run tests:
+```bash
+pytest
+```
+
+3. Run linters:
+```bash
+flake8 src/
+black src/
+mypy src/
+```
+
+4. Generate documentation:
+```bash
+make docs
 ```
 
 ---
 
-## 📂 Directory Structure (WIP)
+## 📂 Project Structure
+
+```
+open-source-ids/
+├── src/                     # Source code directory
+│   ├── core/               # Core IDS components
+│   │   ├── signature/      # Signature-based IDS
+│   │   ├── anomaly/        # Anomaly-based IDS
+│   │   └── host/           # Host-based IDS
+│   ├── config/             # Configuration files
+│   │   └── suricata.py     # Suricata configuration
+│   ├── utils/              # Utility functions
+│   │   ├── parsers/        # Data parsing utilities
+│   │   └── validators/     # Input validation
+│   ├── models/             # Machine learning models
+│   │   ├── autoencoder/    # Autoencoder model code
+│   │   └── signatures/     # Signature database
+│   └── api/                # API endpoints
+│       ├── routes/         # API route handlers
+│       └── schemas/        # Request/response schemas
+├── data/                   # Data storage
+│   ├── raw/                # Raw network data
+│   ├── processed/          # Processed data
+│   └── models/             # Trained models
+├── logs/                   # Log files
+│   ├── suricata/          # Suricata logs
+│   ├── autoencoder/       # Autoencoder logs
+│   └── host/              # Host IDS logs
+├── templates/              # Flask templates
+│   ├── dashboard/         # Main dashboard templates
+│   └── components/        # Reusable UI components
+├── static/                 # Static assets
+│   ├── css/               # Stylesheets
+│   ├── js/                # JavaScript
+│   └── images/            # Images
+├── requirements.txt        # Python dependencies
+└── README.md              # Documentation
+```
+
+## 📚 Documentation
+
+- [API Documentation](docs/api.md)
+- [Configuration Guide](docs/config.md)
+- [Deployment Guide](docs/deployment.md)
+- [Troubleshooting](docs/troubleshooting.md)
+
+## 📊 Database Schema
+
+The project uses SQLAlchemy ORM with the following entities:
+
+```sql
+-- Alerts Table
+CREATE TABLE alerts (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP NOT NULL,
+    source_ip VARCHAR(15) NOT NULL,
+    dest_ip VARCHAR(15) NOT NULL,
+    source_port INTEGER,
+    dest_port INTEGER,
+    protocol VARCHAR(10),
+    category VARCHAR(50),
+    signature VARCHAR(255),
+    severity INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Signatures Table
+CREATE TABLE signatures (
+    id SERIAL PRIMARY KEY,
+    signature_id VARCHAR(50) UNIQUE,
+    category VARCHAR(50),
+    severity INTEGER,
+    description TEXT,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Host Events Table
+CREATE TABLE host_events (
+    id SERIAL PRIMARY KEY,
+    host_id VARCHAR(50),
+    event_type VARCHAR(50),
+    event_data JSONB,
+    timestamp TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
 
 ```bash
 open-source-ids/
-├── phase1-sids/
-│   ├── dashboard/           # Flask dashboard for Suricata
-│   └── suricata-config/     # Suricata rules, logs
-├── phase2-abids/
-│   ├── training/            # Autoencoder model training scripts
-│   ├── evaluation/          # Anomaly detection output (CSV)
-│   └── dashboard/           # Flask dashboard for ABIDS
-├── phase3-merged-dashboard/ # Unified dashboard (in progress)
-├── README.md
-└── requirements.txt
+├── src/                     # Source code directory
+│   ├── core/               # Core IDS components
+│   │   ├── signature/      # Signature-based IDS
+│   │   ├── anomaly/        # Anomaly-based IDS
+│   │   └── host/           # Host-based IDS
+│   ├── config/             # Configuration files
+│   │   ├── suricata.py     # Suricata configuration
+│   │   ├── autoencoder.py  # Autoencoder model config
+│   │   └── host.py         # Host IDS config
+│   ├── utils/              # Utility functions
+│   │   ├── parsers/        # Data parsing utilities
+│   │   └── validators/     # Input validation
+│   ├── models/             # Machine learning models
+│   │   ├── autoencoder/    # Autoencoder model code
+│   │   └── signatures/     # Signature database
+│   └── api/                # API endpoints
+│       ├── routes/         # API route handlers
+│       └── schemas/        # Request/response schemas
+├── data/                   # Data storage
+│   ├── raw/                # Raw network data
+│   ├── processed/          # Processed data
+│   └── models/             # Trained models
+├── logs/                   # Log files
+│   ├── suricata/          # Suricata logs
+│   ├── autoencoder/       # Autoencoder logs
+│   └── host/              # Host IDS logs
+├── templates/              # Flask templates
+│   ├── dashboard/         # Main dashboard templates
+│   └── components/        # Reusable UI components
+├── static/                 # Static assets
+│   ├── css/               # Stylesheets
+│   ├── js/                # JavaScript
+│   └── images/            # Images
+├── requirements.txt        # Python dependencies
+└── README.md              # Documentation
 ```
 
 ---

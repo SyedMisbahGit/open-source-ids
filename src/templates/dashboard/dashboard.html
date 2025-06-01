@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive IDS System</title>
+    <style>
+        /* Copy the CSS from your provided HTML */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        /* Rest of the CSS styles... */
+        /* (Copy all the CSS styles from your provided HTML) */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Comprehensive Intrusion Detection System</h1>
+            <p>Network IDS (S-IDS + A-IDS) + Host IDS + Centralized Dashboard</p>
+        </div>
+
+        <!-- Traffic Flow Visualizer -->
+        <div class="traffic-flow">
+            <h3 class="section-title">Traffic Flow & Detection Pipeline</h3>
+            <div class="traffic-visualizer">
+                <div class="flow-step">
+                    <strong>Incoming Traffic</strong>
+                    <div id="trafficCounter">{{ stats.alert_count }} alerts</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <strong>S-IDS</strong>
+                    <div>Signature Check</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <strong>A-IDS</strong>
+                    <div>AI Analysis</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <strong>Internal Network</strong>
+                    <div>H-IDS Monitoring</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="system-grid">
+            <!-- S-IDS Section -->
+            <div class="ids-section">
+                <h3 class="section-title">
+                    <span class="status-indicator status-active"></span>
+                    Signature-based IDS (S-IDS)
+                </h3>
+                
+                <div class="metrics">
+                    <div class="metric-card">
+                        <div class="metric-value" id="sidsDetections">{{ stats.alert_count }}</div>
+                        <div class="metric-label">Detections</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="sidsSignatures">{{ stats.signature_count }}</div>
+                        <div class="metric-label">Signatures</div>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <button class="btn btn-primary" onclick="updateSignatures()">Update Signatures</button>
+                    <button class="btn btn-secondary" onclick="scanTraffic()">Manual Scan</button>
+                </div>
+
+                <h4>S-IDS Alerts</h4>
+                <div class="log-container" id="sidsLogs">
+                    {% for alert in stats.signature_alerts %}
+                    <div class="log-entry log-warning">
+                        {{ alert.timestamp }} - {{ alert.category }}: {{ alert.signature }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- A-IDS Section -->
+            <div class="ids-section">
+                <h3 class="section-title">
+                    <span class="status-indicator status-active"></span>
+                    Anomaly-based IDS (A-IDS)
+                </h3>
+                
+                <div class="metrics">
+                    <div class="metric-card">
+                        <div class="metric-value" id="aidsDetections">{{ stats.anomaly_alerts|length }}</div>
+                        <div class="metric-label">Anomalies</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="modelAccuracy">{{ stats.system_metrics.model_accuracy }}%</div>
+                        <div class="metric-label">Model Accuracy</div>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <button class="btn btn-primary" onclick="trainModel()">Retrain Model</button>
+                    <button class="btn btn-secondary" onclick="analyzeGranular()">Granular Analysis</button>
+                </div>
+
+                <h4>A-IDS Alerts</h4>
+                <div class="log-container" id="aidsLogs">
+                    {% for alert in stats.anomaly_alerts %}
+                    <div class="log-entry log-danger">
+                        {{ alert.timestamp }} - {{ alert.category }}: {{ alert.signature }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- H-IDS Section -->
+        <div class="ids-section">
+            <h3 class="section-title">
+                <span class="status-indicator status-active"></span>
+                Host-based IDS (H-IDS)
+            </h3>
+            
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="metric-value" id="hostEvents">{{ stats.host_event_count }}</div>
+                    <div class="metric-label">Events</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="hostRules">{{ stats.system_metrics.rules_count }}</div>
+                    <div class="metric-label">Rules</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="cpuUsage">{{ stats.system_metrics.cpu }}%</div>
+                    <div class="metric-label">CPU Usage</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="memoryUsage">{{ stats.system_metrics.memory }}%</div>
+                    <div class="metric-label">Memory Usage</div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <button class="btn btn-primary" onclick="updateHostRules()">Update Rules</button>
+                <button class="btn btn-secondary" onclick="scanHost()">Scan Host</button>
+            </div>
+
+            <h4>H-IDS Alerts</h4>
+            <div class="log-container" id="hostLogs">
+                {% for alert in stats.host_alerts %}
+                <div class="log-entry log-warning">
+                    {{ alert.timestamp }} - {{ alert.category }}: {{ alert.signature }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Centralized Dashboard -->
+        <div class="dashboard">
+            <h3 class="section-title">
+                <span class="status-indicator status-active"></span>
+                Centralized Security Dashboard
+            </h3>
+
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="metric-value" id="totalThreats">0</div>
+                    <div class="metric-label">Total Threats</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="suspiciousTraffic">0</div>
+                    <div class="metric-label">Suspicious Traffic</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="blockedAttacks">0</div>
+                    <div class="metric-label">Blocked Attacks</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="systemHealth">98%</div>
+                    <div class="metric-label">System Health</div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+                <button class="btn btn-secondary" onclick="exportLogs()">Export Logs</button>
+                <button class="btn btn-danger" onclick="emergencyShutdown()">Emergency Mode</button>
+            </div>
+
+            <div id="alertPanel" class="alert-panel" style="display: none;">
+                <h4>🚨 Security Alert</h4>
+                <div id="alertContent"></div>
+            </div>
+
+            <h4>System-wide Activity Log</h4>
+            <div class="log-container" id="dashboardLogs"></div>
+        </div>
+    </div>
+
+    <script>
+        class IDSSystem {
+            constructor() {
+                this.sidsDetections = 0;
+                this.aidsDetections = 0;
+                this.hostEvents = 0;
+                this.totalThreats = 0;
+                this.suspiciousTraffic = 0;
+                this.blockedAttacks = 0;
+                this.alertCount = 0;
+                this.signatures = 0;
+                this.hostRules = 0;
+                
+                // Initialize threat patterns and anomaly types
+                this.maliciousPatterns = [
+                    'SQL injection attempt',
+                    'XSS attack vector',
+                    'Port scanning detected',
+                    'DDoS pattern identified',
+                    'Buffer overflow attempt',
+                    'Malware signature match',
+                    'Suspicious file upload',
+                    'Brute force attack',
+                    'Directory traversal',
+                    'Command injection'
+                ];
+
+                this.anomalyTypes = [
+                    'Unusual traffic volume',
+                    'Abnormal protocol usage',
+                    'Suspicious timing patterns',
+                    'Encrypted payload anomaly',
+                    'Protocol mismatch',
+                    'Unusual port usage',
+                    'Unexpected protocol behavior',
+                    'Traffic pattern deviation',
+                    'Connection rate anomaly'
+                ];
+
+                // Initialize system health metrics
+                this.systemHealth = 98;
+                this.cpuUsage = 25;
+                this.memoryUsage = 35;
+                this.networkUsage = 45;
+                this.diskUsage = 20;
+            }
+
+            // Update UI metrics
+            updateMetrics(stats) {
+                document.getElementById('totalThreats').textContent = stats.alert_count;
+                document.getElementById('suspiciousTraffic').textContent = stats.alert_count;
+                document.getElementById('blockedAttacks').textContent = stats.alert_count;
+                document.getElementById('systemHealth').textContent = stats.system_metrics.system_health + '%';
+                document.getElementById('trafficCounter').textContent = stats.alert_count + ' alerts';
+                document.getElementById('sidsDetections').textContent = stats.alert_count;
+                document.getElementById('aidsDetections').textContent = stats.anomaly_alerts.length;
+                document.getElementById('hostEvents').textContent = stats.host_event_count;
+                document.getElementById('hostRules').textContent = stats.system_metrics.rules_count;
+                document.getElementById('cpuUsage').textContent = stats.system_metrics.cpu + '%';
+                document.getElementById('memoryUsage').textContent = stats.system_metrics.memory + '%';
+            }
+
+            // Fetch system stats
+            async fetchStats() {
+                try {
+                    const response = await fetch('/api/config');
+                    const stats = await response.json();
+                    this.updateMetrics(stats);
+                } catch (error) {
+                    console.error('Error fetching stats:', error);
+                }
+            }
+
+            // Update logs
+            updateLogs(alerts) {
+                const sidsLogs = document.getElementById('sidsLogs');
+                const aidsLogs = document.getElementById('aidsLogs');
+                const hostLogs = document.getElementById('hostLogs');
+                
+                // Clear existing logs
+                sidsLogs.innerHTML = '';
+                aidsLogs.innerHTML = '';
+                hostLogs.innerHTML = '';
+
+                // Add new logs
+                alerts.forEach(alert => {
+                    const entry = document.createElement('div');
+                    entry.className = 'log-entry log-warning';
+                    entry.textContent = `${alert.timestamp} - ${alert.category}: ${alert.signature}`;
+                    
+                    if (alert.component === 'sids') {
+                        sidsLogs.appendChild(entry);
+                    } else if (alert.component === 'aids') {
+                        aidsLogs.appendChild(entry);
+                    } else if (alert.component === 'hids') {
+                        hostLogs.appendChild(entry);
+                    }
+                });
+            }
+
+            // Update signatures
+            async updateSignatures() {
+                try {
+                    const response = await fetch('/api/update-signatures', {
+                        method: 'POST'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        this.signatures = data.count;
+                        await this.fetchStats();
+                    }
+                } catch (error) {
+                    console.error('Error updating signatures:', error);
+                }
+            }
+
+            // Update host rules
+            async updateHostRules() {
+                try {
+                    const response = await fetch('/api/update-host-rules', {
+                        method: 'POST'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        this.hostRules = data.count;
+                        await this.fetchStats();
+                    }
+                } catch (error) {
+                    console.error('Error updating host rules:', error);
+                }
+            }
+
+            // Scan traffic
+            async scanTraffic() {
+                try {
+                    const response = await fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            component: 'sids',
+                            protocol: 'TCP',
+                            port: 8080,
+                            duration: 5
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.alerts) {
+                        this.updateLogs(data.alerts);
+                    }
+                } catch (error) {
+                    console.error('Error scanning traffic:', error);
+                }
+            }
+
+            // Analyze anomalies
+            async analyzeGranular() {
+                try {
+                    const response = await fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            component: 'aids',
+                            traffic: this.generateSampleTraffic()
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.alerts) {
+                        this.updateLogs(data.alerts);
+                    }
+                } catch (error) {
+                    console.error('Error analyzing traffic:', error);
+                }
+            }
+
+            // Scan host
+            async scanHost() {
+                try {
+                    const response = await fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            component: 'hids'
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.alerts) {
+                        this.updateLogs(data.alerts);
+                    }
+                } catch (error) {
+                    console.error('Error scanning host:', error);
+                }
+            }
+
+            // Generate sample traffic data
+            generateSampleTraffic() {
+                return Array.from({ length: 10 }, () => ({
+                    src_ip: this.generateRandomIP(),
+                    dst_ip: this.generateRandomIP(),
+                    protocol: this.maliciousPatterns[Math.floor(Math.random() * this.maliciousPatterns.length)],
+                    timestamp: new Date().toISOString()
+                }));
+            }
+
+            // Generate random IP address
+            generateRandomIP() {
+                return Array.from({ length: 4 }, () => Math.floor(Math.random() * 256)).join('.');
+            }
+
+            // Generate report
+            async generateReport() {
+                try {
+                    const response = await fetch('/api/report', {
+                        method: 'POST'
+                    });
+                    const data = await response.json();
+                    if (data.report) {
+                        // Handle report generation
+                        console.log('Report generated:', data.report);
+                    }
+                } catch (error) {
+                    console.error('Error generating report:', error);
+                }
+            }
+
+            // Export logs
+            async exportLogs() {
+                try {
+                    const response = await fetch('/api/export-logs');
+                    const data = await response.json();
+                    if (data.logs) {
+                        // Handle log export
+                        console.log('Logs exported:', data.logs);
+                    }
+                } catch (error) {
+                    console.error('Error exporting logs:', error);
+                }
+            }
+
+            // Emergency mode
+            async emergencyShutdown() {
+                if (confirm('Are you sure you want to activate emergency mode?')) {
+                    try {
+                        const response = await fetch('/api/emergency', {
+                            method: 'POST'
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            this.systemHealth = 0;
+                            await this.fetchStats();
+                            alert('Emergency mode activated!');
+                        }
+                    } catch (error) {
+                        console.error('Error activating emergency mode:', error);
+                    }
+                }
+            }
+        }
+
+        // Initialize the system when page loads
+        const ids = new IDSSystem();
+        ids.fetchStats();
+    </script>
+</body>
+</html>
